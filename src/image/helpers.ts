@@ -88,7 +88,12 @@ export function generateImgAttrs({
   loader,
 }: GenImgAttrsData): GenImgAttrsResult {
   if (unoptimized) {
-    return { src, srcSet: undefined, sizes: undefined }
+    // A web-public path (`/assets/…`) is served by the web app, as the default loader resolves it for optimized images.
+    const resolved =
+      typeof src === 'string' && src.startsWith('/') && config.nextJsURL
+        ? `${config.nextJsURL}${src}`
+        : src
+    return { src: resolved, srcSet: undefined, sizes: undefined }
   }
 
   const { widths, kind } = getWidths(config, width, sizes)
